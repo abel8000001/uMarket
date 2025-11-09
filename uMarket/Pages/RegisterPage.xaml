@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="uMarket.Pages.RegisterPage"
+             Title="Crear Cuenta"
+             BackgroundColor="#121223"
+             Padding="0">
+
+    <Grid RowDefinitions="240, *">
+
+        <!-- Header -->
+        <Grid Grid.Row="0">
+            <VerticalStackLayout Padding="80" Spacing="6" VerticalOptions="End" HorizontalOptions="Fill">
+                <Label Text="Crear Cuenta"
+                FontSize="26"
+                FontAttributes="Bold"
+                TextColor="{StaticResource White}"
+                HorizontalOptions="Center" />
+                <Label Text="Crea una cuenta con tu ID institucional"
+                FontSize="14"
+                TextColor="{StaticResource White}"
+                HorizontalOptions="Center" />
+            </VerticalStackLayout>
+        </Grid>
+
+        <!-- Register Card -->
+
+        <Border Grid.Row="1"
+            Background="{StaticResource White}"
+            StrokeThickness="0"
+            StrokeShape="RoundRectangle 24,24,0,0"
+            Padding="40, 40, 40, 0"
+            VerticalOptions="Fill">
+            <ScrollView Grid.Row="1" VerticalOptions="Fill" VerticalScrollBarVisibility="Never" HorizontalScrollBarVisibility="Never">
+                <VerticalStackLayout Spacing="12">
+
+                    <!-- Full name -->
+                    <Label Text="NOMBRE COMPLETO"
+                     FontSize="12"
+                     TextColor="{StaticResource Gray500}" />
+
+                    <Border Background="{StaticResource Gray100}"
+                     StrokeThickness="0"
+                     StrokeShape="RoundRectangle 10"
+                     Padding="8"
+                     HorizontalOptions="Fill">
+                        <Entry x:Name="FullNameEntry"
+                         Placeholder="Juan Perez"
+                         Keyboard="Text"
+                         HorizontalOptions="Fill" />
+                    </Border>
+
+                    <!-- ID -->
+                    <Label Text="ID"
+                     FontSize="12"
+                     TextColor="{StaticResource Gray500}" />
+
+                    <Border Background="{StaticResource Gray100}"
+                     StrokeThickness="0"
+                     StrokeShape="RoundRectangle 10"
+                     Padding="8"
+                     HorizontalOptions="Fill">
+                        <Entry x:Name="UsernameEntry"
+                         Placeholder="000123456"
+                         Keyboard="Plain"
+                         HorizontalOptions="Fill" />
+                    </Border>
+
+                    <!-- Password -->
+                    <Label Text="CONTRASEÑA"
+                     FontSize="12"
+                     TextColor="{StaticResource Gray500}" />
+
+                    <Border Background="{StaticResource Gray100}"
+                     StrokeThickness="0"
+                     StrokeShape="RoundRectangle 10"
+                     Padding="8"
+                     HorizontalOptions="Fill">
+                        <Grid Padding="0" VerticalOptions="Center" HeightRequest="44">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="48" />
+                            </Grid.ColumnDefinitions>
+
+                            <Entry x:Name="PasswordEntry"
+                             Grid.Column="0"
+                             Placeholder="••••••••"
+                             Keyboard="Plain"
+                             IsPassword="True"
+                             HorizontalOptions="Fill" />
+
+                            <Image Grid.Column="1"
+                             x:Name="PasswordToggleButton"
+                             Source="eye_hidden.svg"
+                             WidthRequest="20"
+                             HeightRequest="20"
+                             Aspect="AspectFit"
+                             HorizontalOptions="Center"
+                             VerticalOptions="Center"
+                             Margin="0">
+                                <Image.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="PasswordToggleButton_Clicked" NumberOfTapsRequired="1" />
+                                </Image.GestureRecognizers>
+                            </Image>
+                        </Grid>
+                    </Border>
+
+                    <!-- Confirm Password -->
+                    <Label Text="CONFIRMAR CONTRASEÑA"
+                     FontSize="12"
+                     TextColor="{StaticResource Gray500}" />
+
+                    <Border Background="{StaticResource Gray100}"
+                     StrokeThickness="0"
+                     StrokeShape="RoundRectangle 10"
+                     Padding="8"
+                     HorizontalOptions="Fill">
+                        <Entry x:Name="ConfirmPasswordEntry"
+                         Placeholder="••••••••"
+                         Keyboard="Plain"
+                         IsPassword="True"
+                         HorizontalOptions="Fill" />
+                    </Border>
+
+                    <!-- Role selection (two radio buttons) -->
+                    <Label Text="ROL"
+                     FontSize="12"
+                     TextColor="{StaticResource Gray500}" />
+
+                    <Border
+                    StrokeThickness="0"
+                    StrokeShape="RoundRectangle 10"
+                    Padding="0"
+                    HorizontalOptions="Fill">
+                        <HorizontalStackLayout Spacing="16" VerticalOptions="Center">
+                            <RadioButton x:Name="RoleStudentRadio" Content="Estudiante" GroupName="RoleGroup" />
+                            <RadioButton x:Name="RoleVendorRadio" Content="Vendedor" GroupName="RoleGroup" />
+                        </HorizontalStackLayout>
+                    </Border>
+
+                    <Label x:Name="ErrorLabel"
+                     TextColor="{StaticResource Magenta}"
+                     IsVisible="False"
+                     FontSize="12" />
+
+                    <!-- Register button + activity indicator -->
+                    <VerticalStackLayout Spacing="8">
+                        <Button x:Name="RegisterButton"
+                         Text="CREAR CUENTA"
+                         BackgroundColor="{StaticResource Primary}"
+                         TextColor="{StaticResource White}"
+                         HeightRequest="48"
+                         CornerRadius="10"
+                         Clicked="RegisterButton_Clicked"
+                         HorizontalOptions="Fill" />
+
+                        <Button x:Name="GoToLoginButton"
+                        Text="INICIAR SESIÓN"
+                        BackgroundColor="Transparent"
+                        TextColor="{StaticResource Primary}"
+                        HeightRequest="44"
+                        CornerRadius="8"
+                        Clicked="GoToLoginButton_Clicked"
+                        HorizontalOptions="Fill" />
+
+                        <ActivityIndicator x:Name="LoadingIndicator"
+                         IsVisible="False"
+                         IsRunning="False"
+                         VerticalOptions="Center"
+                         HorizontalOptions="Center" />
+                    </VerticalStackLayout>
+                </VerticalStackLayout>
+            </ScrollView>
+        </Border>
+
+    </Grid>
+</ContentPage>

@@ -1,0 +1,18 @@
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Warning",
+      "Microsoft.AspNetCore": "Warning"
+    }
+  },
+  "ConnectionStrings": {
+    "DefaultConnection": "WILL_BE_SET_BY_AZURE_APP_SETTINGS"
+  },
+  "Jwt": {
+    "Key": "WILL_BE_SET_BY_AZURE_APP_SETTINGS",
+    "Issuer": "https://your-app-name.azurewebsites.net",
+    "Audience": "https://your-app-name.azurewebsites.net",
+    "ExpiresMinutes": "60"
+  },
+  "AllowedHosts": "*"
+}

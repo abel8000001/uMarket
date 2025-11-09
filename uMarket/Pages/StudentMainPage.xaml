@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+ xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+ x:Class="uMarket.Pages.StudentMainPage"
+ Title="Vendedores Disponibles">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="16" Spacing="16">
+            <!-- Header -->
+            <Grid ColumnDefinitions="*,Auto">
+                <Label Grid.Column="0"
+                       Text="uMarket" 
+                       FontAttributes="Bold" 
+                       FontSize="22" 
+                       VerticalOptions="Center"
+                       TextColor="{StaticResource Primary}" />
+                <Button Grid.Column="1"
+                        Text="Cerrar Sesión" 
+                        Clicked="LogoutButton_Clicked" 
+                        BackgroundColor="#FF3B30" 
+                        TextColor="White"
+                        FontSize="14"
+                        Padding="12,6"
+                        CornerRadius="6"/>
+            </Grid>
+
+            <!-- Active Chats Section -->
+            <Frame Padding="12" CornerRadius="8" HasShadow="True">
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="💬 Chats Activos" FontAttributes="Bold" FontSize="18" />
+                    <BoxView HeightRequest="1" Color="LightGray" />
+                    
+                    <CollectionView x:Name="ConversationsCollection" 
+                                    SelectionMode="Single" 
+                                    SelectionChanged="ConversationsCollection_SelectionChanged"
+                                    EmptyView="No tienes conversaciones activas">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate>
+                                <Grid Padding="12" Margin="0,4">
+                                    <Frame Padding="12" CornerRadius="8" BackgroundColor="#F8F9FA" HasShadow="False">
+                                        <Frame.GestureRecognizers>
+                                            <TapGestureRecognizer Tapped="ConversationFrame_Tapped" />
+                                        </Frame.GestureRecognizers>
+                                        <Grid ColumnDefinitions="*,Auto">
+                                            <VerticalStackLayout Grid.Column="0" Spacing="4">
+                                                <Label Text="{Binding OtherFullName}" 
+                                                       FontSize="16" 
+                                                       FontAttributes="Bold" 
+                                                       TextColor="#212529" />
+                                                <Label Text="{Binding LastMessageAt, StringFormat='Último mensaje: {0:g}'}" 
+                                                       FontSize="12" 
+                                                       TextColor="Gray" />
+                                            </VerticalStackLayout>
+                                            <Label Grid.Column="1" 
+                                                   Text="›" 
+                                                   FontSize="24" 
+                                                   TextColor="{StaticResource Primary}" 
+                                                   VerticalOptions="Center" />
+                                        </Grid>
+                                    </Frame>
+                                </Grid>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Available Sellers Section -->
+            <Frame Padding="12" CornerRadius="8" HasShadow="True">
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="🛒 Vendedores Disponibles Ahora" FontAttributes="Bold" FontSize="18" />
+                    <BoxView HeightRequest="1" Color="LightGray" />
+                    
+                    <CollectionView x:Name="SellersCollection" 
+                                    SelectionMode="None"
+                                    EmptyView="No hay vendedores disponibles ahora">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate>
+                                <Grid Padding="12" Margin="0,4">
+                                    <Frame Padding="12" CornerRadius="8" BackgroundColor="#E8F5E9" HasShadow="False">
+                                        <Frame.GestureRecognizers>
+                                            <TapGestureRecognizer Tapped="SellerFrame_Tapped" />
+                                        </Frame.GestureRecognizers>
+                                        <VerticalStackLayout Spacing="4">
+                                            <Label Text="{Binding FullName}" 
+                                                   FontSize="16" 
+                                                   FontAttributes="Bold" 
+                                                   TextColor="#212529" />
+                                            <Label Text="{Binding CurrentDescription}" 
+                                                   FontSize="13" 
+                                                   TextColor="#6C757D" 
+                                                   LineBreakMode="WordWrap" />
+                                            <Label Text="Toca para solicitar chat" 
+                                                   FontSize="11" 
+                                                   TextColor="{StaticResource Primary}" 
+                                                   FontAttributes="Italic" />
+                                        </VerticalStackLayout>
+                                    </Frame>
+                                </Grid>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </VerticalStackLayout>
+            </Frame>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
