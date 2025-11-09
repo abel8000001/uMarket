@@ -361,3 +361,19 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+# Android keystores
+*.keystore
+*.jks
+
+# User-specific files with passwords
+*.csproj.user
+*.vbproj.user
+
+# Android APK/AAB files (compiled apps)
+*.apk
+*.aab
+
+# Environment-specific config files
+appsettings.Development.json
+appsettings.Production.json
