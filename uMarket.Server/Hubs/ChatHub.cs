@@ -1,10 +1,11 @@
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using uMarket.Server.Data;
-using uMarket.Server.Models.Chat;
-using Microsoft.AspNetCore.Identity;
 using uMarket.Server.Models;
+using uMarket.Server.Models.Chat;
 
 namespace uMarket.Server.Hubs
 {
@@ -78,37 +79,46 @@ namespace uMarket.Server.Hubs
             var userId = GetUserId();
             if (string.IsNullOrEmpty(userId)) return;
 
-            var req = await _db.ChatRequests.FindAsync(requestId);
-            if (req == null) return;
-            if (req.ToUserId != userId) return; // only seller can respond
-
-            req.Status = accept ? ChatRequestStatus.Accepted : ChatRequestStatus.Denied;
-
-            Guid? conversationId = null;
-
             if (accept)
             {
-                var convo = new Conversation { CreatedAt = DateTimeOffset.UtcNow };
-                _db.Conversations.Add(convo);
+                // Use stored procedure for atomic operation
+                await _db.Database.ExecuteSqlAsync($@"
+            EXEC dbo.sp_AcceptChatRequest 
+                @ChatRequestId = {requestId}, 
+                @AcceptedBy = {userId}");
+
+                // Get the created conversation ID
+                var req = await _db.ChatRequests
+                    .Where(r => r.Id == requestId)
+                    .Select(r => r.ConversationId)
+                    .FirstOrDefaultAsync();
+
+                // Notify requester
+                var chatReq = await _db.ChatRequests.FindAsync(requestId);
+                if (chatReq != null)
+                {
+                    var requesterGroup = GetUserGroupName(chatReq.FromUserId);
+                    await Clients.Group(requesterGroup).SendAsync("ChatRequestResponded",
+                        new { RequestId = requestId, Accepted = true, ConversationId = req });
+
+                    var sellerGroup = GetUserGroupName(userId);
+                    await Clients.Group(sellerGroup).SendAsync("ChatRequestResponseSaved",
+                        new { RequestId = requestId, Accepted = true, ConversationId = req });
+                }
+            }
+            else
+            {
+                // Denial doesn't need stored proc
+                var req = await _db.ChatRequests.FindAsync(requestId);
+                if (req == null || req.ToUserId != userId) return;
+
+                req.Status = ChatRequestStatus.Denied;
                 await _db.SaveChangesAsync();
 
-                // add participants
-                _db.ConversationParticipants.Add(new ConversationParticipant { ConversationId = convo.Id, UserId = req.FromUserId, Role = 0 });
-                _db.ConversationParticipants.Add(new ConversationParticipant { ConversationId = convo.Id, UserId = req.ToUserId, Role = 1 });
-
-                req.ConversationId = convo.Id;
-                conversationId = convo.Id;
+                var requesterGroup = GetUserGroupName(req.FromUserId);
+                await Clients.Group(requesterGroup).SendAsync("ChatRequestResponded",
+                    new { RequestId = requestId, Accepted = false, ConversationId = (Guid?)null });
             }
-
-            await _db.SaveChangesAsync();
-
-            // Notify requester about response
-            var requesterGroup = GetUserGroupName(req.FromUserId);
-            await Clients.Group(requesterGroup).SendAsync("ChatRequestResponded", new { RequestId = req.Id, Accepted = accept, ConversationId = conversationId });
-
-            // Notify seller (caller) that response succeeded
-            var sellerGroup = GetUserGroupName(req.ToUserId);
-            await Clients.Group(sellerGroup).SendAsync("ChatRequestResponseSaved", new { RequestId = req.Id, Accepted = accept, ConversationId = conversationId });
         }
 
         public async Task JoinConversation(Guid conversationId)

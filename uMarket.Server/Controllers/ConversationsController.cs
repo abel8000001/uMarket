@@ -79,7 +79,10 @@ namespace uMarket.Server.Controllers
 
         [Authorize]
         [HttpGet("{conversationId}/messages")]
-        public async Task<IActionResult> GetMessages(Guid conversationId)
+        public async Task<IActionResult> GetMessages(
+    Guid conversationId,
+    [FromQuery] int page = 1,
+    [FromQuery] int pageSize = 50)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (string.IsNullOrEmpty(userId)) return Unauthorized();
@@ -87,17 +90,12 @@ namespace uMarket.Server.Controllers
             var isParticipant = await _db.ConversationParticipants.FindAsync(conversationId, userId) != null;
             if (!isParticipant) return Forbid();
 
-            var msgs = await _db.Messages
-                .Where(m => m.ConversationId == conversationId)
-                .OrderBy(m => m.SentAt)
-                .Select(m => new ChatMessageDto
-                {
-                    MessageId = m.Id,
-                    ConversationId = m.ConversationId,
-                    SenderId = m.SenderId,
-                    Content = m.Content,
-                    SentAt = m.SentAt
-                })
+            var msgs = await _db.Database
+                .SqlQuery<ChatMessageDto>($@"
+                    EXEC dbo.sp_GetConversationMessages_Paged 
+                        @ConversationId = {conversationId}, 
+                        @Page = {page}, 
+                        @PageSize = {pageSize}")
                 .ToListAsync();
 
             return Ok(msgs);

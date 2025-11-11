@@ -1,11 +1,12 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using uMarket.Server.Data;
-using uMarket.Server.Models.Sellers;
-using Microsoft.AspNetCore.SignalR;
 using uMarket.Server.Hubs;
+using uMarket.Server.Models.Sellers;
 
 namespace uMarket.Server.Controllers
 {
@@ -98,19 +99,24 @@ namespace uMarket.Server.Controllers
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (string.IsNullOrEmpty(userId)) return Unauthorized();
 
-            var requests = await _db.ChatRequests
-            .Where(r => r.ToUserId == userId && r.Status == uMarket.Server.Models.Chat.ChatRequestStatus.Pending)
-            .OrderByDescending(r => r.CreatedAt)
-            .Select(r => new
-            {
-                RequestId = r.Id,
-                FromUserId = r.FromUserId,
-                FromFullName = _db.Users.Where(u => u.Id == r.FromUserId).Select(u => u.FullName).FirstOrDefault(),
-                CreatedAt = r.CreatedAt
-            })
-            .ToListAsync();
+            // Use table-valued function - eliminates N+1 query problem
+            var requests = await _db.Database
+                .SqlQueryRaw<PendingRequest>(
+                    "SELECT RequestId, FromUserId, FromFullName, FromUserName, CreatedAt FROM dbo.tvf_GetPendingChatRequests(@UserId)",
+                    new SqlParameter("@UserId", userId))
+                .ToListAsync();
 
             return Ok(requests);
+        }
+
+        // Inline DTO for pending requests
+        private class PendingRequest
+        {
+            public Guid RequestId { get; set; }
+            public string FromUserId { get; set; } = string.Empty;
+            public string FromFullName { get; set; } = string.Empty;
+            public string? FromUserName { get; set; }
+            public DateTimeOffset CreatedAt { get; set; }
         }
     }
 }
