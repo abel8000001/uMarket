@@ -83,9 +83,9 @@ namespace uMarket.Server.Hubs
             {
                 // Use stored procedure for atomic operation
                 await _db.Database.ExecuteSqlAsync($@"
-            EXEC dbo.sp_AcceptChatRequest 
-                @ChatRequestId = {requestId}, 
-                @AcceptedBy = {userId}");
+                    EXEC dbo.sp_AcceptChatRequest 
+                        @ChatRequestId = {requestId}, 
+                        @AcceptedBy = {userId}");
 
                 // Get the created conversation ID
                 var req = await _db.ChatRequests

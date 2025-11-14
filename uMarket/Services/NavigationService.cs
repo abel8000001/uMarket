@@ -6,9 +6,7 @@ using Microsoft.Maui.Controls;
 
 namespace uMarket.Services
 {
-    /// <summary>
     /// Shell-based navigation service implementation
-    /// </summary>
     public class NavigationService : INavigationService
     {
         public async Task NavigateToAsync(string route, IDictionary<string, object>? parameters = null)

@@ -1,8 +1,6 @@
 namespace uMarket
 {
-    /// <summary>
     /// API Settings - Base URL configured per environment
-    /// </summary>
     public static class ApiSettings
     {
 #if DEBUG

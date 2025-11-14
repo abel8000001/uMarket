@@ -52,8 +52,7 @@ builder.Services.AddCors(options =>
             policy
                 .AllowAnyHeader()
                 .AllowAnyMethod()
-                .AllowAnyOrigin(); // TODO: Replace with specific mobile app origin when available
-                // For MAUI apps, you might need AllowAnyOrigin since mobile apps don't have a fixed origin
+                .AllowAnyOrigin();
         });
     }
     else
